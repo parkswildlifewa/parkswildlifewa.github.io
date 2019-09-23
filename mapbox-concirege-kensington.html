@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8' />
+<title>Mapbox</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<link href="https://fonts.googleapis.com/css?family=Heebo" rel="stylesheet">
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v3.1.0/mapbox-gl-geocoder.min.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v3.1.0/mapbox-gl-geocoder.css' type='text/css' />
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.0/mapbox-gl-directions.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.0.0/mapbox-gl-directions.css' type='text/css' />
+<style>
+body {
+     margin:0;
+     padding:0;
+     font-family: 'Heebo', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+ #map {
+     position:absolute;
+     top:0;
+     bottom:0;
+     width:100%;
+}
+ #menu {
+     background: #fff;
+     position: absolute;
+     z-index: 1;
+     top: 20px;
+     left: 10px;
+     border-radius: 4px;
+	 padding:10px;
+     box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+}
+
+.mapboxgl-popup-close-button {
+    color:#fff;
+}
+ .marker {
+     background-image: url('icon-meeting.png');
+     background-size: cover;
+     width: 50px;
+     height: 50px;
+     border-radius: 50%;
+     cursor: pointer;
+}
+ .mapboxgl-popup {
+     max-width: 300px;
+}
+.mapboxgl-popup-content {
+    position: relative;
+    background: #fff;
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    padding: 0 0 15px 0;
+    pointer-events: auto;
+}
+
+.mapboxgl-popup-content h3 {
+    background: #4eaae3;
+    color: #fff;
+    margin: 0;
+    display: block;
+    padding: 10px;
+    border-radius: 3px 3px 0 0;
+    font-weight: 700;
+    margin-top: -15px;
+	} 
+.mapboxgl-popup-content p {
+	padding:10px;margin:0px;
+}
+.mapboxgl-popup-content p.photo {
+	padding:0px;
+	margin:0px;
+}	
+
+
+.geocoder {
+	position:absolute;
+	z-index:1;
+	width:50%;
+	left:50%;
+	margin-left:-25%;
+	top:20px;
+}
+#geocoder .mapboxgl-ctrl-geocoder  { 
+    max-width:unset;
+	width:100%;
+	
+}
+#geocoder ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #aeaeae;
+  opacity: 1; /* Firefox */
+}
+
+#geocoder :-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: #aeaeae;
+}
+
+#geocoder ::-ms-input-placeholder { /* Microsoft Edge */
+  color: #aeaeae;
+}
+#geocoder .mapboxgl-ctrl-geocoder input[type='text'] {
+    font-size: 16px;
+    width: 100%;
+    border: 0;
+    background-color: transparent;
+    height: 45px;
+    margin: 0;
+    color: rgba(0,0,0,.5);
+    padding: 10px 40px 10px 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#geocoder .mapboxgl-ctrl-geocoder {
+    font: 15px/20px 'Heebo', Arial, Helvetica, sans-serif;
+    position: relative;
+    background-color: white;
+    width: calc(100% - 360px);
+    min-width: calc(100% - 80px);
+    max-width: calc(100% - 80px);
+    margin-left: 80px;
+    border-radius: 4px;
+	box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+}
+	
+
+.btns-container>button:first-child {
+    border-top: 0;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+}
+
+.btns-container>button {
+    width: 30px;
+    height: 30px;
+    display: block;
+    padding: 0;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid #ddd;
+    box-sizing: border-box;
+     background-color: rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    position: relative;
+}
+.btns-container>button:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+.btns-container>button.active {
+    background-color: transparent;
+}
+.btns-container>button.active:hover {
+     background-color: rgba(0, 0, 0, 0.08);
+}
+
+.btns-container>button:last-child {
+    border-bottom: 0;
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+	
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id='menu'>
+<input id='streets-v11' type='radio' name='rtoggle' value='streets' checked='checked'>
+<label for='streets'>streets</label>
+<input id='light-v10' type='radio' name='rtoggle' value='light'>
+<label for='light'>light</label>
+<input id='dark-v10' type='radio' name='rtoggle' value='dark'>
+<label for='dark'>dark</label>
+<input id='outdoors-v11' type='radio' name='rtoggle' value='outdoors'>
+<label for='outdoors'>outdoors</label>
+<input id='satellite-streets-v9' type='radio' name='rtoggle' value='satellite'>
+<label for='satellite'>satellite</label>
+</div>
+<nav id="filter-group" class="filter-group"></nav>
+<div id="geocoder" class="geocoder"></div>
+<script>
+// define access token
+mapboxgl.accessToken = 'pk.eyJ1IjoicGljYSIsImEiOiJjanJqeHZ1bmowYWlzNDNwMmtueWNwaG9rIn0.fFt2EsyxM5QFcIS0_kup0A';
+// Set bounds to Perth
+var bounds = [
+	[115.78580280808433, -32.031734730927234], // Southwest coordinates
+	[115.99419032115463, -31.954674612810813]  // Northeast coordinates
+];
+
+const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v11',
+    center: [115.884058, -31.996236],
+    zoom: 18.30,
+    pitch: 60,
+    bearing: 35,
+	maxBounds: bounds // Sets bounds as max
+});
+
+
+
+var places = {
+    "type": "FeatureCollection",
+    "features": [{
+         "type": "Feature",
+         "geometry": {
+             "type": "Point",
+             "coordinates": [115.8837, -31.9961]
+         },
+         "properties": {
+			 "id": "1",
+			 "category": "home",
+			 "icon": "icon-user.png",
+             "title": "Your Location",
+             "description": "You are here!",
+			 "photo": "https://picsum.photos/300/169/?random"
+         }
+     }]
+};
+
+
+
+
+var geocoder = new MapboxGeocoder({
+accessToken: mapboxgl.accessToken,
+// limit results to Australia
+countries: 'au',
+
+    // further limit results to the geographic bounds representing the region of
+    // Perth, Western Australia
+    bbox: [115.786, -32.032, 115.994, -31.955],
+
+    // apply a client side filter to further limit results to those strictly within
+    // the Western Australia region
+    filter: function(item) {
+        // returns true if item contains Western Australia region
+        return item.context.map(function(i) {
+            // id is in the form {index}.{id} per https://github.com/mapbox/carmen/blob/master/carmen-geojson.md
+            // this example attempts to find the `region` named `Western Australia`
+            return (i.id.split('.').shift() === 'region' && i.text === 'Western Australia');
+        }).reduce(function(acc, cur) {
+            return acc || cur;
+        });
+    },
+	placeholder: "Enter search e.g. Technology Park"
+	
+
+
+});
+ 
+
+map.on("load", function() {
+
+
+var layers = map.getStyle().layers;
+
+    var labelLayerId;
+    for (var i = 0; i < layers.length; i++) {
+        if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
+            labelLayerId = layers[i].id;
+            break;
+        }
+    }
+	
+// add markers to map
+places.features.forEach(function(marker) { 
+
+    // create a HTML element for each feature
+    var el = document.createElement('div');
+    el.className = 'marker';
+	// Load our custom icon
+	el.style.backgroundImage = 'url(' + marker.properties.icon + ')';
+    // make a marker for each feature and add it to the map
+    new mapboxgl.Marker(el)
+        .setLngLat(marker.geometry.coordinates)
+        .setPopup(new mapboxgl.Popup({offset: 25}) // add popups
+        //.setHTML('<h3>' + marker.properties.title + '</h3><p class="photo"><img src="' + marker.properties.photo + '" alt="Photo of location"</p><p>' + marker.properties.description + '</p>'))
+                .setHTML('<h3>' + marker.properties.title + '</h3><p>' + marker.properties.description + '</p>'))
+				.addTo(map);
+		
+		el.addEventListener('click', () => {
+            map.flyTo({
+                center: marker.geometry.coordinates,zoom: 18.30
+            });      
+        }); 
+});
+
+
+map.addSource('single-point', {
+    "type": "geojson",
+    "data": {
+        "type": "FeatureCollection",
+        "features": []
+    }
+});
+
+map.addLayer({
+    "id": "point",
+    "source": "single-point",
+    "type": "circle",
+    "paint": {
+        "circle-radius": 10,
+        "circle-color": "#007cbf"
+    }
+});
+
+// Listen for the `result` event from the MapboxGeocoder that is triggered when a user
+// makes a selection and add a symbol that matches the result.
+geocoder.on('result', function(ev) {
+    map.getSource('single-point').setData(ev.result.geometry);
+});
+
+map.addLayer({
+        'id': '3d-buildings',
+        'source': 'composite',
+        'source-layer': 'building',
+        'filter': ['==', 'extrude', 'true'],
+        'type': 'fill-extrusion',
+        'minzoom': 15,
+        'paint': {
+            'fill-extrusion-color': '#aaa',
+
+            // use an 'interpolate' expression to add a smooth transition effect to the
+            // buildings as the user zooms in
+            'fill-extrusion-height': [
+                "interpolate", ["linear"],
+                ["zoom"],
+                15, 0,
+                15.05, ["get", "height"]
+            ],
+            'fill-extrusion-base': [
+                "interpolate", ["linear"],
+                ["zoom"],
+                15, 0,
+                15.05, ["get", "min_height"]
+            ],
+            'fill-extrusion-opacity': .6
+        }
+    }, labelLayerId);
+	
+	
+});
+
+var layerList = document.getElementById('menu');
+var inputs = layerList.getElementsByTagName('input');
+ 
+function switchLayer(layer) {
+var layerId = layer.target.id;
+map.setStyle('mapbox://styles/mapbox/' + layerId);
+}
+ 
+for (var i = 0; i < inputs.length; i++) {
+inputs[i].onclick = switchLayer;
+}
+
+map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
+
+map.addControl(new MapboxDirections({
+    accessToken: mapboxgl.accessToken
+}), 'bottom-left');
+
+document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+</script>
+ <!-- https://maps.unimelb.edu.au/southbank/building -->
+</body>
+</html>
