@@ -356,7 +356,7 @@ for (var i = 0; i < inputs.length; i++) {
 inputs[i].onclick = switchLayer;
 }
 
-map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
 
 map.addControl(new MapboxDirections({
     accessToken: mapboxgl.accessToken
