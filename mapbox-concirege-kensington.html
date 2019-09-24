@@ -362,6 +362,8 @@ map.addControl(new MapboxDirections({
     accessToken: mapboxgl.accessToken
 }), 'top-left');
 
+directions.setOrigin('115.88370,-31.99610');
+
 document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
 </script>
  <!-- https://maps.unimelb.edu.au/southbank/building -->
