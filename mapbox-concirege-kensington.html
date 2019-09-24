@@ -357,7 +357,9 @@ inputs[i].onclick = switchLayer;
 }
 
 map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
-
+var directions = new MapboxDirections({
+    accessToken: mapboxgl.accessToken
+  });
 map.addControl(new MapboxDirections({
     accessToken: mapboxgl.accessToken
 }), 'top-left');
