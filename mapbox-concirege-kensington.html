@@ -194,7 +194,7 @@ const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v11',
     center: [115.884058, -31.996236],
-    zoom: 18.30,
+    zoom: 16,
     pitch: 60,
     bearing: 35,
 	maxBounds: bounds // Sets bounds as max
@@ -362,10 +362,9 @@ map.addControl(new MapboxDirections({
     accessToken: mapboxgl.accessToken
 }), 'top-left');
 
-directions.setOrigin('115.88370,-31.99610');
+directions.setOrigin('115.8837, -31.9961');
 
 document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
 </script>
- <!-- https://maps.unimelb.edu.au/southbank/building -->
 </body>
 </html>
