@@ -45,6 +45,7 @@ body {
      cursor: pointer;
 }
  .mapboxgl-popup {
+     width:100%;
      max-width: 300px;
 }
 .mapboxgl-popup-content {
@@ -66,8 +67,10 @@ body {
     font-weight: 700;
     margin-top: -15px;
 	} 
+
 .mapboxgl-popup-content p {
-	padding:10px;margin:0px;
+	padding:10px;
+	margin:0px;
 }
 .mapboxgl-popup-content p.photo {
 	padding:0px;
@@ -195,7 +198,7 @@ const map = new mapboxgl.Map({
     style: 'mapbox://styles/mapbox/streets-v11',
     center: [115.884058, -31.996236],
     zoom: 16,
-    pitch: 60,
+    pitch: 55,
     bearing: 35,
 	maxBounds: bounds // Sets bounds as max
 });
@@ -215,8 +218,9 @@ var places = {
 			 "category": "home",
 			 "icon": "https://raw.githubusercontent.com/parkswildlifewa/parkswildlifewa.github.io/master/pegman2.png",
              "title": "Your Location",
-             "description": "You are here!",
-			 "photo": "https://picsum.photos/300/169/?random"
+             "description": "Keiran McNamara Conservation Science Centre",
+			 "address": "17 Dick Perry Ave Kensington,<br>WA 6152",
+			 "photo": "https://raw.githubusercontent.com/parkswildlifewa/parkswildlifewa.github.io/master/kmcsc.jpg"
          }
      }]
 };
@@ -277,9 +281,8 @@ places.features.forEach(function(marker) {
     new mapboxgl.Marker(el)
         .setLngLat(marker.geometry.coordinates)
         .setPopup(new mapboxgl.Popup({offset: 25}) // add popups
-        //.setHTML('<h3>' + marker.properties.title + '</h3><p class="photo"><img src="' + marker.properties.photo + '" alt="Photo of location"</p><p>' + marker.properties.description + '</p>'))
-                .setHTML('<h3>' + marker.properties.title + '</h3><p>' + marker.properties.description + '</p>'))
-				.addTo(map);
+        .setHTML('<h3>' + marker.properties.title + '</h3><p class="photo"><img src="' + marker.properties.photo + '" alt="Photo of location"</p><p><strong>' + marker.properties.description + '</strong><br>' + marker.properties.address + '</p>'))
+		.addTo(map);
 		
 		el.addEventListener('click', () => {
             map.flyTo({
