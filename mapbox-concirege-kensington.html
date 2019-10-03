@@ -165,7 +165,12 @@ body {
     border-bottom-right-radius: 4px;
     border-bottom-left-radius: 4px;
 }
-	
+
+
+.mapboxgl-ctrl-geolocate {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg' fill='%23333'%3E %3Cpath d='M10 4C9 4 9 5 9 5L9 5.1A5 5 0 0 0 5.1 9L5 9C5 9 4 9 4 10 4 11 5 11 5 11L5.1 11A5 5 0 0 0 9 14.9L9 15C9 15 9 16 10 16 11 16 11 15 11 15L11 14.9A5 5 0 0 0 14.9 11L15 11C15 11 16 11 16 10 16 9 15 9 15 9L14.9 9A5 5 0 0 0 11 5.1L11 5C11 5 11 4 10 4zM10 6.5A3.5 3.5 0 0 1 13.5 10 3.5 3.5 0 0 1 10 13.5 3.5 3.5 0 0 1 6.5 10 3.5 3.5 0 0 1 10 6.5zM10 8.3A1.8 1.8 0 0 0 8.3 10 1.8 1.8 0 0 0 10 11.8 1.8 1.8 0 0 0 11.8 10 1.8 1.8 0 0 0 10 8.3z'/%3E %3C/svg%3E");
+}
+
 </style>
 </head>
 <body>
@@ -189,8 +194,8 @@ body {
 mapboxgl.accessToken = 'pk.eyJ1IjoicGljYSIsImEiOiJjanJqeHZ1bmowYWlzNDNwMmtueWNwaG9rIn0.fFt2EsyxM5QFcIS0_kup0A';
 // Set bounds to Perth
 var bounds = [
-	[115.78580280808433, -32.031734730927234], // Southwest coordinates
-	[115.99419032115463, -31.954674612810813]  // Northeast coordinates
+	[91.71444353053857,-44.141839939336], // Southwest coordinates
+	[171.71754734471256,-8.837028157057532]  // Northeast coordinates
 ];
 
 const map = new mapboxgl.Map({
@@ -257,6 +262,7 @@ countries: 'au',
  
 
 map.on("load", function() {
+
 
 
 var layers = map.getStyle().layers;
@@ -370,6 +376,83 @@ map.addControl(new MapboxDirections({
 directions.setOrigin('115.8837, -31.9961');
 
 document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+
+/*
+// Add geolocate control to the map.
+map.addControl(new mapboxgl.GeolocateControl({
+positionOptions: {
+enableHighAccuracy: true
+},
+trackUserLocation: true
+}), 'bottom-right');
+*/
+
+/* Event Handlers */
+function one(event) {
+  alert("Event handler when clicking on \r\n" + event.target.className);
+  console.log("event number 1", event);
+}
+
+
+
+
+
+
+
+
+
+
+/* Idea from Stack Overflow https://stackoverflow.com/a/51683226  */
+class MapboxGLButtonControl {
+  constructor({
+    className = "",
+    title = "",
+    eventHandler = evtHndlr
+  }) {
+    this._className = className;
+    this._title = title;
+    this._eventHandler = eventHandler;
+  }
+
+  onAdd(map) {
+    this._btn = document.createElement("button");
+    this._btn.className = "mapboxgl-ctrl-icon" + " " + this._className;
+    this._btn.type = "button";
+    this._btn.title = this._title;
+    this._btn.onclick = this._eventHandler;
+
+    this._container = document.createElement("div");
+    this._container.className = "mapboxgl-ctrl-group mapboxgl-ctrl";
+    this._container.appendChild(this._btn);
+
+    return this._container;
+  }
+
+  onRemove() {
+    this._container.parentNode.removeChild(this._container);
+    this._map = undefined;
+  }
+}
+
+/* Event Handlers */
+function one(event) {
+  map.flyTo({center: [115.8837, -31.9961],zoom: 16,pitch: 55, bearing: 35,});
+}
+
+
+/* Instantiate new controls with custom event handlers */
+const ctrlPoint = new MapboxGLButtonControl({
+  className: "mapboxgl-ctrl-geolocate",
+  title: "Show Location",
+  eventHandler: one
+});
+
+
+/* Add Controls to the Map */
+
+map.addControl(ctrlPoint, "bottom-right");
+
+
 </script>
 </body>
 </html>
